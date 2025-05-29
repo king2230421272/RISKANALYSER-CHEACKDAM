@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`repo slug from APPVEYOR 1`] = `
+{
+  "project": "travis-build",
+  "user": "travis-ci",
+}
+`;
+
+exports[`repo slug from TRAVIS_REPO_SLUG 1`] = `
+{
+  "project": "travis-build",
+  "user": "travis-ci",
+}
+`;

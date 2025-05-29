@@ -1,0 +1,20 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`electronDist 1`] = `"ENOENT"`;
+
+exports[`forceCodeSigning 1`] = `"ERR_ELECTRON_BUILDER_INVALID_CONFIGURATION"`;
+
+exports[`parseDn 1`] = `
+Map {
+  "CN" => "7digital Limited",
+  "O" => "7digital Limited",
+  "L" => "London",
+  "C" => "GB",
+}
+`;
+
+exports[`win code sign using pwsh 1`] = `
+{
+  "win": [],
+}
+`;

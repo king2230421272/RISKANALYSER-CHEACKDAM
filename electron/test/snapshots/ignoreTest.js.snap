@@ -1,0 +1,65 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`2 ignore 1`] = `
+{
+  "linux": [],
+}
+`;
+
+exports[`Don't copy sub node_modules of the other dir instead of rootDir 1`] = `
+{
+  "linux": [],
+}
+`;
+
+exports[`cannot copied select submodule node_modules by **/submodule-1-test/node_modules 1`] = `
+{
+  "linux": [],
+}
+`;
+
+exports[`cannot copied select submodule node_modules by */ 1`] = `
+{
+  "linux": [],
+}
+`;
+
+exports[`copied select submodule node_modules 1`] = `
+{
+  "linux": [],
+}
+`;
+
+exports[`copied sub node_modules of the rootDir/node_modules 1`] = `
+{
+  "linux": [],
+}
+`;
+
+exports[`ignore build resources 1`] = `
+{
+  "linux": [],
+}
+`;
+
+exports[`ignore known ignored files 1`] = `
+{
+  "linux": [],
+}
+`;
+
+exports[`ignore known ignored files 2`] = `
+[
+  "index.html",
+  "index.js",
+  "package.json",
+  "app/readme.md",
+  "app/package.json/readme.md",
+]
+`;
+
+exports[`ignore node_modules dev dep 1`] = `
+{
+  "linux": [],
+}
+`;

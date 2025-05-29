@@ -1,0 +1,31 @@
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.page-title {
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  font-weight: 500;
+  color: #333;
+  border-bottom: 1px solid #e8e8e8;
+  padding-bottom: 0.5rem;
+}
+
+.app-footer {
+  background-color: #f7f7f7;
+  padding: 1rem 2rem;
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+  border-top: 1px solid #e8e8e8;
+} 

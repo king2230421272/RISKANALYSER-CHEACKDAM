@@ -1,0 +1,29 @@
+{
+  "extends": "./tsconfig-scheme.json",
+  "jsdoc": {
+    "out": "../../scripts/jsdoc/out/builder-lib",
+    "examples": "../../scripts/jsdoc/examples",
+    "access": "public"
+  },
+  "compilerOptions": {
+    "outDir": "out",
+    "rootDir": "src",
+  },
+  "include": [
+      "src/**/*.ts",
+      "../../typings/*.d.ts"
+  ],
+  "exclude": [
+  ],
+  "references": [
+    {
+      "path": "../builder-util"
+    },
+    {
+      "path": "../builder-util-runtime"
+    },
+    {
+      "path": "../electron-publish"
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`cli 1`] = `
+{
+  "config": {
+    "extraMetadata": {
+      "foo": "bar",
+    },
+  },
+}
+`;
+
+exports[`cli 2`] = `
+{
+  "config": {
+    "extraMetadata": {
+      "dev": {
+        "login-url": true,
+      },
+    },
+  },
+}
+`;
+
+exports[`extra metadata (no asar) 1`] = `
+{
+  "linux": [],
+}
+`;
+
+exports[`extra metadata (no asar) 2`] = `
+{
+  "author": "Foo Bar <foo@example.com>",
+  "description": "Test Application (test quite " #378)",
+  "foo": {
+    "bar": 12,
+    "disabled": false,
+    "existingProp": 22,
+    "updated": true,
+  },
+  "homepage": "http://foo.example.com",
+  "license": "MIT",
+  "name": "TestApp",
+  "private": true,
+  "productName": "Test App ßW",
+  "rootKey": false,
+  "rootKeyN": null,
+  "rootKeyT": true,
+  "version": "1.0.0-beta.19",
+}
+`;
+
+exports[`extra metadata 1`] = `
+{
+  "linux": [],
+}
+`;
+
+exports[`extra metadata 2`] = `
+{
+  "author": "Foo Bar <foo@example.com>",
+  "description": "Test Application (test quite " #378)",
+  "foo": {
+    "bar": 12,
+    "disabled": false,
+    "existingProp": 22,
+    "updated": true,
+  },
+  "homepage": "http://foo.example.com",
+  "license": "MIT",
+  "name": "TestApp",
+  "private": true,
+  "productName": "Test App ßW",
+  "rootKey": false,
+  "rootKeyN": null,
+  "rootKeyT": true,
+  "version": "1.0.0-beta.19",
+}
+`;

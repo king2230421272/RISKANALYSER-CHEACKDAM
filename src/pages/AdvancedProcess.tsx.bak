@@ -1,0 +1,366 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Card,
+  Button,
+  Space,
+  Form,
+  Select,
+  Input,
+  Checkbox,
+  Spin,
+  Table,
+  Alert,
+  Divider,
+  Typography,
+  message,
+  Tag,
+  Row,
+  Col,
+  Switch,
+  Empty
+} from 'antd';
+import { runAdvancedPipeline } from '../utils/api';
+import type { AdvancedPipelineConfig, AdvancedPipelineResponse } from '../utils/api';
+import { useNavigate, useParams } from 'react-router-dom';
+import { CloudUploadOutlined, ExperimentOutlined, LineChartOutlined, LoadingOutlined } from '@ant-design/icons';
+
+const { Title, Text } = Typography;
+const { Option } = Select;
+
+interface Dataset {
+  id: number;
+  name: string;
+  description?: string;
+  row_count: number;
+  column_count: number;
+}
+
+const AdvancedProcess: React.FC = () => {
+  const [form] = Form.useForm();
+  const navigate = useNavigate();
+  const { datasetId } = useParams<{ datasetId: string }>();
+  
+  const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [columns, setColumns] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [previewData, setPreviewData] = useState<any[]>([]);
+  const [previewColumns, setPreviewColumns] = useState<any[]>([]);
+  const [response, setResponse] = useState<AdvancedPipelineResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // 复选框和数据源显示状态
+  const [showDataSource, setShowDataSource] = useState(true);
+  const [useMockAPI, setUseMockAPI] = useState(localStorage.getItem('use_mock_api') === 'true');
+
+  useEffect(() => {
+    // 模拟加载数据集列表
+    setDatasets([
+      { id: 1, name: '风险评估数据集', description: '包含缺失值的风险评估数据集', row_count: 1000, column_count: 15 },
+      { id: 2, name: '金融风险数据', description: '金融风险分析样本数据', row_count: 500, column_count: 10 },
+    ]);
+    
+    // 模拟加载数据集列
+    setColumns(['年龄', '收入', '债务', '资产', '信用分数', '风险评分', '历史违约次数']);
+
+    // 如果URL中有数据集ID，自动选择
+    if (datasetId) {
+      form.setFieldsValue({ dataset_id: parseInt(datasetId, 10) });
+    }
+  }, [datasetId, form]);
+
+  // 处理模拟API切换
+  const handleMockAPIToggle = (checked: boolean) => {
+    setUseMockAPI(checked);
+    localStorage.setItem('use_mock_api', checked ? 'true' : 'false');
+    message.info(`${checked ? '启用' : '禁用'}模拟API`);
+  };
+
+  // 提交表单
+  const handleSubmit = async (values: any) => {
+    setLoading(true);
+    setError(null);
+    setResponse(null);
+    setPreviewData([]);
+    setPreviewColumns([]);
+    
+    try {
+      const config: AdvancedPipelineConfig = {
+        dataset_id: values.dataset_id,
+        pipeline_steps: values.pipeline_steps,
+        target_column: values.target_column,
+        max_attempts: values.max_attempts || 3,
+        mi_model: values.mi_model || 'bayesian_linear',
+        auto_tune: values.auto_tune !== false,
+        continue_despite_cgan: values.continue_despite_cgan !== false,
+      };
+
+      message.loading({ content: '正在执行高级数据处理流程...', key: 'processing', duration: 0 });
+      
+      const result = await runAdvancedPipeline(config);
+      setResponse(result);
+      
+      if (result.preview_data) {
+        setPreviewData(result.preview_data.data);
+        
+        // 构造表格列配置
+        const tableColumns = result.preview_data.columns.map(col => ({
+          title: col,
+          dataIndex: col,
+          key: col,
+          render: (value: any) => {
+            if (value === null || value === undefined || value === '') {
+              return <Text type="secondary">缺失</Text>;
+            }
+            return value;
+          }
+        }));
+        setPreviewColumns(tableColumns);
+      }
+      
+      message.success({ content: '处理完成！', key: 'processing' });
+    } catch (err: any) {
+      setError(err.message || '处理过程中发生错误');
+      message.error({ content: `处理失败: ${err.message}`, key: 'processing' });
+      console.error('高级处理流程错误:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="advanced-process-page">
+      <Title level={2}>高级数据处理流程</Title>
+      
+      <Row justify="end" style={{ marginBottom: 16 }}>
+        <Col>
+          <Space>
+            <Text>使用模拟API:</Text>
+            <Switch 
+              checked={useMockAPI} 
+              onChange={handleMockAPIToggle} 
+              checkedChildren="开" 
+              unCheckedChildren="关"
+            />
+          </Space>
+        </Col>
+      </Row>
+      
+      <Card title="配置处理流程" bordered={false}>
+        <Form 
+          form={form} 
+          layout="vertical" 
+          onFinish={handleSubmit}
+          initialValues={{
+            max_attempts: 3,
+            mi_model: 'bayesian_linear',
+            auto_tune: true,
+            continue_despite_cgan: true,
+            pipeline_steps: ['mcmc_imputation', 'multiple_imputation', 'cgan_train', 'cgan_validation', 'ks_test', 'spearman_corr']
+          }}
+        >
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="dataset_id"
+                label="选择数据集"
+                rules={[{ required: true, message: '请选择数据集' }]}
+              >
+                <Select placeholder="选择要处理的数据集">
+                  {datasets.map(dataset => (
+                    <Option key={dataset.id} value={dataset.id}>
+                      {dataset.name} ({dataset.row_count}行 x {dataset.column_count}列)
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                name="target_column"
+                label="目标列"
+                rules={[{ required: true, message: '请选择目标列' }]}
+              >
+                <Select placeholder="选择目标分析列">
+                  {columns.map(col => (
+                    <Option key={col} value={col}>{col}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                name="pipeline_steps"
+                label="处理步骤"
+                rules={[{ required: true, message: '请选择至少一个处理步骤' }]}
+              >
+                <Select mode="multiple" placeholder="选择处理步骤">
+                  <Option value="mcmc_imputation">MCMC缺失值插补</Option>
+                  <Option value="multiple_imputation">多重插补框架分析</Option>
+                  <Option value="cgan_train">CGAN模型训练</Option>
+                  <Option value="cgan_validation">CGAN模型验证</Option>
+                  <Option value="ks_test">K-S检验</Option>
+                  <Option value="spearman_corr">Spearman相关分析</Option>
+                  <Option value="permutation_test">置换检验</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+
+            <Col span={12}>
+              <Form.Item name="max_attempts" label="MCMC最大尝试次数">
+                <Select>
+                  <Option value={1}>1</Option>
+                  <Option value={2}>2</Option>
+                  <Option value={3}>3</Option>
+                  <Option value={5}>5</Option>
+                </Select>
+              </Form.Item>
+
+              <Form.Item name="mi_model" label="多重插补框架模型">
+                <Select>
+                  <Option value="bayesian_linear">贝叶斯线性回归</Option>
+                  <Option value="cart">决策树</Option>
+                  <Option value="rf">随机森林</Option>
+                </Select>
+              </Form.Item>
+
+              <Form.Item name="auto_tune" valuePropName="checked">
+                <Checkbox>自动调优参数</Checkbox>
+              </Form.Item>
+
+              <Form.Item name="continue_despite_cgan" valuePropName="checked">
+                <Checkbox>即使CGAN验证失败也继续执行（使用MCMC数据）</Checkbox>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item>
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              loading={loading}
+              icon={<ExperimentOutlined />}
+            >
+              开始处理
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
+
+      {error && (
+        <Alert
+          message="处理错误"
+          description={error}
+          type="error"
+          showIcon
+          style={{ marginTop: 16 }}
+        />
+      )}
+
+      {response && response.preview_data && (
+        <>
+          <Divider />
+          <Card 
+            title={
+              <Space>
+                <span>处理结果预览</span>
+                {response.result_summary?.data_source && showDataSource && (
+                  <Tag color={response.result_summary.fallback_to_mcmc ? 'orange' : 'green'}>
+                    {response.result_summary.data_source}
+                    {response.result_summary.fallback_to_mcmc && ' (CGAN验证未通过)'}
+                  </Tag>
+                )}
+              </Space>
+            }
+            bordered={false}
+            style={{ marginTop: 16 }}
+          >
+            {response.preview_data?.data && response.preview_data.data.length > 0 ? (
+              <>
+                {response.result_summary?.warnings && response.result_summary.warnings.length > 0 && (
+                  <Alert
+                    message="处理过程中的警告"
+                    description={
+                      <ul>
+                        {response.result_summary.warnings.map((warning, index) => (
+                          <li key={index}>{warning}</li>
+                        ))}
+                      </ul>
+                    }
+                    type="warning"
+                    showIcon
+                    style={{ marginBottom: 16 }}
+                  />
+                )}
+                
+                <Table
+                  dataSource={previewData.map((item, index) => ({ key: index, ...item }))}
+                  columns={previewColumns}
+                  scroll={{ x: 'max-content' }}
+                  pagination={{ pageSize: 5 }}
+                  size="small"
+                />
+                
+                <Divider />
+                
+                <Row gutter={[16, 16]}>
+                  <Col span={12}>
+                    <Card title="执行步骤" size="small">
+                      <ul>
+                        {response.result_summary?.steps_executed?.map((step, index) => (
+                          <li key={index}>{step}</li>
+                        ))}
+                      </ul>
+                      <Text type="secondary">
+                        执行时间: {response.result_summary?.execution_time ? (response.result_summary.execution_time / 1000).toFixed(2) : '未知'} 秒
+                      </Text>
+                    </Card>
+                  </Col>
+                  
+                  <Col span={12}>
+                    <Card title="统计检验结果" size="small">
+                      {response.evaluation_results ? (
+                        <ul>
+                          {response.evaluation_results.ks_test && (
+                            <li>
+                              K-S检验: 统计量 = {response.evaluation_results.ks_test.statistic.toFixed(4)}, 
+                              p值 = {response.evaluation_results.ks_test.p_value.toFixed(4)}
+                              {response.evaluation_results.ks_test.p_value > 0.05 ? 
+                                ' (分布无显著差异)' : ' (分布有显著差异)'}
+                            </li>
+                          )}
+                          
+                          {response.evaluation_results.spearman_corr && (
+                            <li>
+                              Spearman相关: 系数 = {response.evaluation_results.spearman_corr.coefficient.toFixed(4)}, 
+                              p值 = {response.evaluation_results.spearman_corr.p_value.toFixed(4)}
+                              {response.evaluation_results.spearman_corr.p_value < 0.05 ? 
+                                ' (显著相关)' : ' (无显著相关)'}
+                            </li>
+                          )}
+                          
+                          {response.evaluation_results.permutation_test && (
+                            <li>
+                              置换检验: 统计量 = {response.evaluation_results.permutation_test.statistic.toFixed(4)}, 
+                              p值 = {response.evaluation_results.permutation_test.p_value.toFixed(4)},
+                              重采样次数 = {response.evaluation_results.permutation_test.n_resamples}
+                              {response.evaluation_results.permutation_test.p_value < 0.05 ? 
+                                ' (有显著差异)' : ' (无显著差异)'}
+                            </li>
+                          )}
+                        </ul>
+                      ) : (
+                        <Text type="secondary">无统计检验结果</Text>
+                      )}
+                    </Card>
+                  </Col>
+                </Row>
+              </>
+            ) : (
+              <Empty description="没有预览数据可显示" />
+            )}
+          </Card>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default AdvancedProcess; 

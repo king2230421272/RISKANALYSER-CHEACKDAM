@@ -1,0 +1,202 @@
+.data-import-container {
+  max-width: 100%;
+}
+
+.upload-card {
+  margin-bottom: 24px;
+}
+
+.datasets-card {
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.ant-upload-drag-icon {
+  font-size: 48px;
+  color: #1890ff;
+}
+
+.ant-upload-text {
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+.ant-upload-hint {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* 表格相关样式 */
+.datasets-card .ant-table-wrapper {
+  width: 100%;
+}
+
+.datasets-card .ant-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.datasets-card .ant-table-thead th {
+  white-space: nowrap;
+  background-color: #fafafa;
+  text-align: center;
+}
+
+.datasets-card .ant-table-cell {
+  padding: 12px 8px;
+  font-size: 14px;
+}
+
+.datasets-card .ant-table-tbody td {
+  word-break: break-word;
+}
+
+/* 操作列样式 */
+.datasets-card .ant-table-cell .ant-space {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.datasets-card .ant-btn.ant-btn-link {
+  min-width: auto;
+  margin: 0 2px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .ant-table {
+    font-size: 12px;
+  }
+  
+  .datasets-card .ant-table-cell {
+    padding: 8px 4px;
+    font-size: 12px;
+  }
+}
+
+/* 可调整列宽相关样式 */
+.react-resizable {
+  position: relative;
+  background-clip: padding-box;
+}
+
+.react-resizable-handle {
+  position: absolute;
+  right: -5px;
+  bottom: 0;
+  z-index: 10;
+  width: 10px;
+  height: 100%;
+  cursor: col-resize;
+}
+
+/* 增加调整手柄的可见性 */
+.react-resizable-handle::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 5px;
+  width: 4px;
+  height: 100%;
+  background-color: rgba(24, 144, 255, 0.3); /* 默认显示蓝色，半透明 */
+  transition: background-color 0.2s;
+}
+
+.react-resizable-handle:hover::after {
+  background-color: #1890ff; /* 悬停时显示实心蓝色 */
+  box-shadow: 0 0 5px rgba(24, 144, 255, 0.5); /* 添加阴影 */
+}
+
+/* 优化表格垂直滚动 */
+.datasets-card .ant-table-body {
+  max-height: 400px !important;
+  overflow-y: auto !important;
+}
+
+.datasets-card .ant-table-header {
+  overflow: auto !important;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.datasets-card .ant-table-body::-webkit-scrollbar {
+  width: 8px;
+  height: 0; /* 移除横向滚动条 */
+}
+
+.datasets-card .ant-table-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.datasets-card .ant-table-body::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.datasets-card .ant-table-body::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+.datasets-card .ant-table-tbody td {
+  word-break: break-word;
+  white-space: normal;
+}
+
+/* 数据预览模态框中表格的滚动优化 */
+.ant-modal-body .ant-table-body {
+  max-height: 400px !important;
+  overflow-y: auto !important;
+}
+
+.ant-modal-body .ant-table-header {
+  overflow: auto !important;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.ant-modal-body .ant-table-cell {
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.ant-modal-body .ant-table-container {
+  border-radius: 4px;
+  border: 1px solid #f0f0f0;
+}
+
+/* 美化滚动条 */
+.ant-modal-body .ant-table-body::-webkit-scrollbar {
+  width: 8px;
+  height: 0; /* 移除横向滚动条 */
+}
+
+.ant-modal-body .ant-table-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.ant-modal-body .ant-table-body::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.ant-modal-body .ant-table-body::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
+
+/* 处理表头横向滚动条 */
+.ant-modal-body .ant-table-header::-webkit-scrollbar,
+.datasets-card .ant-table-header::-webkit-scrollbar {
+  height: 0 !important;
+  display: none;
+}
+
+.ant-modal-body .ant-table-header,
+.datasets-card .ant-table-header {
+  overflow-x: hidden !important;
+} 
